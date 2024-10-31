@@ -1,1 +1,141 @@
-sample.txt
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Function to merge two halves of an array
+void merge(int arr[], int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    int* L = (int*)malloc(n1 * sizeof(int));
+    int* R = (int*)malloc(n2 * sizeof(int));
+
+    for (i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    i = 0; 
+    j = 0; 
+    k = left; 
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+
+    free(L);
+    free(R);
+}
+
+// Merge Sort function
+void mergeSort(int arr[], int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+// Function to partition the array
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = (low - 1);
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+    int temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+    return (i + 1);
+}
+
+// Quick Sort function
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+// Function to print an array
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+
+// Function to generate random array
+void generateRandomArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = rand() % 1000; // Random numbers between 0 and 999
+    }
+}
+
+int main() {
+    srand(time(0)); // Seed for random number generation
+    int n = 10000; // Size of the array
+
+    // Create an array for Merge Sort
+    int* mergeArr = (int*)malloc(n * sizeof(int));
+    generateRandomArray(mergeArr, n);
+
+    // Measure time for Merge Sort
+    clock_t start = clock();
+    mergeSort(mergeArr, 0, n - 1);
+    clock_t end = clock();
+    double mergeTime = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("Sorted array using Merge Sort:\n");
+    printArray(mergeArr, 10); // Print first 10 sorted elements
+    printf("Time taken for Merge Sort: %f seconds\n", mergeTime);
+
+    // Create an array for Quick Sort
+    int* quickArr = (int*)malloc(n * sizeof(int));
+    generateRandomArray(quickArr, n);
+
+    // Measure time for Quick Sort
+    start = clock();
+    quickSort(quickArr, 0, n - 1);
+    end = clock();
+    double quickTime = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("Sorted array using Quick Sort:\n");
+    printArray(quickArr, 10); // Print first 10 sorted elements
+    printf("Time taken for Quick Sort: %f seconds\n", quickTime);
+
+    // Clean up
+    free(mergeArr);
+    free(quickArr);
+
+    return 0;
+}
