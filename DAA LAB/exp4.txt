@@ -1,1 +1,58 @@
-sample.txt
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent an activity
+typedef struct {
+    int start;
+    int finish;
+} Activity;
+
+// Function to compare two activities based on their finish time
+int compare(const void *a, const void *b) {
+    Activity *activity1 = (Activity *)a;
+    Activity *activity2 = (Activity *)b;
+    return activity1->finish - activity2->finish;
+}
+
+// Function to perform the activity selection
+void activitySelection(Activity activities[], int n) {
+    // Sort activities based on their finish time
+    qsort(activities, n, sizeof(Activity), compare);
+
+    printf("Selected activities: \n");
+    
+    // The first activity always gets selected
+    int i = 0;
+    printf("Activity %d: [%d, %d]\n", i, activities[i].start, activities[i].finish);
+
+    // Consider the rest of the activities
+    for (int j = 1; j < n; j++) {
+        // If this activity starts after or when the last selected activity finishes
+        if (activities[j].start >= activities[i].finish) {
+            printf("Activity %d: [%d, %d]\n", j, activities[j].start, activities[j].finish);
+            i = j; // Update the last selected activity
+        }
+    }
+}
+
+int main() {
+    int n;
+
+    // Example activities (start time, finish time)
+    printf("Enter the number of activities: ");
+    scanf("%d", &n);
+
+    Activity *activities = (Activity *)malloc(n * sizeof(Activity));
+
+    printf("Enter the start and finish times of the activities (start finish):\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d", &activities[i].start, &activities[i].finish);
+    }
+
+    activitySelection(activities, n);
+
+    // Free allocated memory
+    free(activities);
+
+    return 0;
+}
